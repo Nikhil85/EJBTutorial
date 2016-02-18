@@ -34,50 +34,85 @@ public class EJBTester {
 		System.out.println("**********************");
 		System.out.println("Welcome to Book Store");
 		System.out.println("**********************");
-		System.out.print("Options \n1. Add Book\n2. Exit \nEnter Choice: ");
+		System.out.print("Options \n1.Add Book\n2.See BookList\n3.Check Stateless and StateFul\n4.Close Client\n Enter Choice:-");
 	}
 
-	private void testStatelessEjb(InitialContext ctx) {
+	private void testStatelessEjb(InitialContext ctx) throws Exception {
 		try {
 			int choice = 1;
-			LibrarySessionBeanRemote libraryBean = (LibrarySessionBeanRemote) ctx.lookup("LibrarySessionBeanRemote#com.ejb.yash.example.LibrarySessionBeanRemote");
-			while (choice != 2) {
+			LibrarySessionBeanRemote libraryBean = (LibrarySessionBeanRemote) ctx
+					.lookup("LibrarySessionBeanRemote#com.ejb.yash.example.LibrarySessionBeanRemote");
+			LibrarySessionBeanRemote libraryBean1 = (LibrarySessionBeanRemote) ctx
+					.lookup("LibrarySessionBeanRemote#com.ejb.yash.example.LibrarySessionBeanRemote");
+			while (choice != 4) {
 				String bookName;
 				showGUI();
 				choice = brConsoleReader.nextInt();
 				if (choice == 1) {
-					System.out.print("Enter book name: ");
+					System.out.print("Enter book name:-");
 					bookName = brConsoleReader.next();
 					libraryBean.addBook(bookName);
 				} else if (choice == 2) {
+					// break;
+					System.out.println("Get book name List");
+					List<String> booksList = libraryBean.getBooks();
+					System.out.println("Book(s) entered so far: "
+							+ booksList.size());
+					for (int i = 0; i < booksList.size(); ++i) {
+						System.out.println((i + 1) + ". " + booksList.get(i));
+					}
+
+				} else if (choice == 3) {
+					String decision;
+					System.out.println("Check Stateless and Statefull Bean");
+					if (libraryBean.equals(libraryBean1)) {
+						System.out
+								.println("------------Stateless---------SingletonObject------------");
+					} else {
+
+						System.out
+								.println("------------Staefull---------PrototypeObject------------");
+						System.out
+								.println("Do you Want to Add book name in new Stateful Object then Enter Yes other wise enter 4 ");
+                          decision = brConsoleReader.next();
+						if (decision.equalsIgnoreCase("YES")) {
+							System.out.print("Enter book name: ");
+							bookName = brConsoleReader.next();
+							libraryBean1.addBook(bookName);
+
+						}
+						System.out.println("Do you Want to See book name list in new Stateful Object then Enter Yes other wise enter 4 ");
+						 decision = brConsoleReader.next();
+						if (decision.equalsIgnoreCase("YES")) {
+							List<String> booksList = libraryBean1.getBooks();
+							System.out.println("Book(s) entered so far: "
+									+ booksList.size());
+							for (int i = 0; i < booksList.size(); ++i) {
+								System.out.println((i + 1) + ". "
+										+ booksList.get(i));
+							}
+
+						}
+					}
+				} else if (choice == 4) {
+					ctx.close();
+					brConsoleReader.close();
+					System.out
+							.println("#########Close Client#########################");
 					break;
 				}
+
 			}
-			List<String> booksList = libraryBean.getBooks();
-			System.out.println("Book(s) entered so far: " + booksList.size());
-			for (int i = 0; i < booksList.size(); ++i) {
-				System.out.println((i + 1) + ". " + booksList.get(i));
-			}
-			LibrarySessionBeanRemote libraryBean1 = (LibrarySessionBeanRemote) ctx
-					.lookup("LibrarySessionBeanRemote#com.ejb.yash.example.LibrarySessionBeanRemote");
-			List<String> booksList1 = libraryBean1.getBooks();
-			System.out
-					.println("***Using second lookup to get library stateless object***");
-			System.out.println("Book(s) entered so far: " + booksList1.size());
-			for (int i = 0; i < booksList1.size(); ++i) {
-				System.out.println((i + 1) + ". " + booksList1.get(i));
-			}
+
 		} catch (Exception e) {
+			ctx.close();
+			brConsoleReader.close();
 			System.out.println(e.getMessage());
 			e.printStackTrace();
+
 		} finally {
-			try {
-				if (brConsoleReader != null) {
-					brConsoleReader.close();
-				}
-			} catch (Exception ex) {
-				System.out.println(ex.getMessage());
-			}
+			ctx.close();
+			brConsoleReader.close();
 		}
 	}
 }

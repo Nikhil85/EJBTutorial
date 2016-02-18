@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.ejb.Stateful;
 import javax.ejb.Stateless;
 
 /**
  * Session Bean implementation class LibrarySessionBean
  */
-@Stateless(mappedName = "LibrarySessionBeanRemote")
+//@Stateless(mappedName = "LibrarySessionBeanRemote")
+@Stateful(mappedName = "LibrarySessionBeanRemote")
 @Remote(LibrarySessionBeanRemote.class)
 public class LibrarySessionBean implements LibrarySessionBeanRemote {
     
